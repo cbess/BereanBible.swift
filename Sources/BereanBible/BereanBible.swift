@@ -21,18 +21,25 @@ let strongsNumId = Expression<Int>("num")
 let strongsText = Expression<Int>("text")
 
 public struct BereanBibleManager {
-    public private(set) var text = "Hello, World!"
-    let path = Bundle.main.path(forResource: "bsb", ofType: "db")!
     let db: Connection
     
     public init() {
+        let path = Bundle.module.path(forResource: "bsb", ofType: "db")!
         db = try! Connection(path, readonly: true)
     }
 
-    public func text(book: Int, chapter: Int, verse: Int?) -> String {
-        var table = interlinearTable.select(origText).filter(bookId == book).filter(chapterId == chapter)
-        if let verse = verse {
-            table = table.filter(verseId == verse)
+    /// Returns the text for the specified range, or the given chapter for the original language or the BSB translation (default)
+    public func text(book: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> String {
+        let col = isOrig ? origText : bsbText
+        
+        // select the verses
+        var table = interlinearTable.select(col).filter(bookId == book).filter(chapterId == chapter)
+        if let range = verseRange {
+            if range.startIndex == range.endIndex {
+                table = table.filter(verseId == range.startIndex)
+            } else {
+                table = table.filter(verseId >= range.startIndex).filter(verseId < range.endIndex)
+            }
         }
         
         let query = try? db.prepare(table)
@@ -40,11 +47,13 @@ public struct BereanBibleManager {
             return ""
         }
         
-        var fullText = NSMutableString()
+        // build the full text value from all the rows/verses
+        let fullText = NSMutableString()
         for row in query {
-            fullText.append(try! row.get(origText))
+            let text = try! row.get(col)
+            fullText.append(text + " ")
         }
         
-        return fullText as String
+        return (fullText as String).trimmingCharacters(in: .whitespaces)
     }
 }

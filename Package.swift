@@ -3,6 +3,7 @@
 
 import PackageDescription
 
+let dbPath = "bsb.db"
 let package = Package(
     name: "BereanBible",
     platforms: [
@@ -23,10 +24,10 @@ let package = Package(
         .target(
             name: "BereanBible",
             dependencies: [.product(name: "SQLite", package: "SQLite.swift")],
-            resources: [.copy("Resources")]),
+            resources: [.copy(dbPath)]),
         .testTarget(
             name: "BereanBibleTests",
             dependencies: ["BereanBible"],
-            resources: [.copy("Resources")]),
+            resources: [.copy(dbPath)]),
     ]
 )
