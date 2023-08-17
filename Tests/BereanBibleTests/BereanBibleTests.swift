@@ -6,6 +6,6 @@ final class BereanBibleTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(BereanBible().text, "Hello, World!")
+        XCTAssertEqual(BereanBibleManager().text, "Hello, World!")
     }
 }
