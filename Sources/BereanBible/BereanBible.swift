@@ -125,6 +125,7 @@ public struct BereanBibleManager {
     }
 }
 
+/// Represents a verse and its information
 public struct Verse {
     var bookId: Int
     var chapter: Int
@@ -149,6 +150,7 @@ public struct Verse {
     }
 }
 
+/// Represents a part of a single verse
 public struct VersePart {
     var origSort: Double
     var origText: String
@@ -161,5 +163,6 @@ public struct VersePart {
     var parsing: String
     var parsingFull: String
     var strongs: Int
+    /// Original language code H = Hebrew/Aramaic and G = Greek
     var langCode: String
 }

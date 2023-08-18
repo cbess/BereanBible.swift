@@ -21,4 +21,10 @@ final class BereanBibleTests: XCTestCase {
         text = BereanBibleManager().text(book: 43, chapter: 1, verseRange: Range(uncheckedBounds: (1, 1)), isOrig: true)
         XCTAssertEqual(text, "Ἐν ἀρχῇ ἦν ὁ Λόγος καὶ ὁ Λόγος ἦν πρὸς τὸν Θεόν καὶ Θεὸς ἦν ὁ Λόγος")
     }
+    
+    func testSmallChapter() throws {
+        let verses = BereanBibleManager().verses(book: 64, chapter: 1, verseRange: nil)
+        
+        XCTAssertEqual(verses.count, 14, "Wrong verse count for 3 John")
+    }
 }
