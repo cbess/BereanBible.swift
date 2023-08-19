@@ -27,7 +27,11 @@ fileprivate func sortParts(_ parts: [VersePart], isOrig: Bool) -> [VersePart] {
 }
 
 public struct BereanBibleManager {
+    /// Shared bible manager
+    public static let shared = BereanBibleManager()
     let db: Connection
+    
+    // MARK: - Helpers
     
     /// Returns the text for the given verse parts
     public static func line(from parts: [VersePart], isOrig: Bool = false) -> String {
@@ -72,10 +76,14 @@ public struct BereanBibleManager {
         return text as String
     }
     
+    // MARK: - Initializer
+    
     public init() {
         let path = Bundle.module.path(forResource: "bsb", ofType: "db")!
         db = try! Connection(path, readonly: true)
     }
+    
+    // MARK: - Main Operations
 
     /// Returns the text for the specified verse range, or the given chapter
     /// - parameters:
@@ -97,23 +105,6 @@ public struct BereanBibleManager {
     public func lines(bookID: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> [String] {
         let verses = verses(bookID: bookID, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
         return Self.lines(from: verses, isOrig: isOrig)
-    }
-    
-    private func getVersePart(from row: Row) -> VersePart {
-        return VersePart(
-            origSort: try! row.get(origSort),
-            origText: try! row.get(origText),
-            sort: try! row.get(bsbSort),
-            text: try! row.get(bsbText),
-            bookID: try! row.get(bookId),
-            chapter: try! row.get(chapterId),
-            verse: try! row.get(verseId),
-            transliteration: try! row.get(translit),
-            parsing: try! row.get(parsing),
-            parsingFull: try! row.get(parsingFull),
-            strongs: try! row.get(strongsId),
-            langCode: try! row.get(langCode)
-        )
     }
     
     /// Returns the verses for the specified book, chapter and verse range
@@ -165,6 +156,26 @@ public struct BereanBibleManager {
         verses.append(Verse(bookID: bookID, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
         return verses
     }
+    
+    // MARK: - Misc
+    
+    private func getVersePart(from row: Row) -> VersePart {
+        return VersePart(
+            origSort: try! row.get(origSort),
+            origText: try! row.get(origText),
+            sort: try! row.get(bsbSort),
+            text: try! row.get(bsbText),
+            bookID: try! row.get(bookId),
+            chapter: try! row.get(chapterId),
+            verse: try! row.get(verseId),
+            transliteration: try! row.get(translit),
+            parsing: try! row.get(parsing),
+            parsingFull: try! row.get(parsingFull),
+            strongs: try! row.get(strongsId),
+            langCode: try! row.get(langCode)
+        )
+    }
+    
 }
 
 /// Represents a single verse and its information
