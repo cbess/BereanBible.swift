@@ -2,25 +2,25 @@ import Foundation
 import SQLite
 
 // tables
-let interlinearTable = Table("interlinear")
-let strongsTable = Table("strongs")
+fileprivate let interlinearTable = Table("interlinear")
+fileprivate let strongsTable = Table("strongs")
 // columns
-let origSort = Expression<Double>("orig_sort")
-let origText = Expression<String>("orig_text")
-let bsbSort = Expression<Double>("bsb_sort")
-let bsbText = Expression<String>("bsb_text")
-let langCode = Expression<String>("lang_code")
-let bookId = Expression<Int>("book")
-let chapterId = Expression<Int>("chapter")
-let verseId = Expression<Int>("verse")
-let translit = Expression<String>("transliteration")
-let parsing = Expression<String>("parsing")
-let parsingFull = Expression<String>("parsing_full")
-let strongsId = Expression<Int>("strongs")
-let strongsNumId = Expression<Int>("num")
-let strongsText = Expression<Int>("text")
+fileprivate let origSort = Expression<Double>("orig_sort")
+fileprivate let origText = Expression<String>("orig_text")
+fileprivate let bsbSort = Expression<Double>("bsb_sort")
+fileprivate let bsbText = Expression<String>("bsb_text")
+fileprivate let langCode = Expression<String>("lang_code")
+fileprivate let bookId = Expression<Int>("book")
+fileprivate let chapterId = Expression<Int>("chapter")
+fileprivate let verseId = Expression<Int>("verse")
+fileprivate let translit = Expression<String>("transliteration")
+fileprivate let parsing = Expression<String>("parsing")
+fileprivate let parsingFull = Expression<String>("parsing_full")
+fileprivate let strongsId = Expression<Int>("strongs")
+fileprivate let strongsNumId = Expression<Int>("num")
+fileprivate let strongsText = Expression<Int>("text")
 
-fileprivate func sortParts(isOrig: Bool, parts: [VersePart]) -> [VersePart] {
+fileprivate func sortParts(_ parts: [VersePart], isOrig: Bool) -> [VersePart] {
     return parts.sorted { lhs, rhs in
         return isOrig ? lhs.origSort < rhs.origSort : lhs.sort < rhs.sort
     }
@@ -34,7 +34,12 @@ public struct BereanBibleManager {
         db = try! Connection(path, readonly: true)
     }
 
-    /// Returns the text for the specified range, or the given chapter for the original language or the BSB translation (default)
+    /// Returns the text for the specified verse range, or the given chapter
+    /// - parameters:
+    ///     - book: The book ID
+    ///     - chapter: The chapter ID
+    ///     - verseRange: The verse range of the text
+    ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
     public func text(book: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> String {
         let lines = lines(book: book, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
         
@@ -46,7 +51,12 @@ public struct BereanBibleManager {
         return (fullText as String).trimmingCharacters(in: .whitespaces)
     }
     
-    /// Returns the lines of text for the specified range, or the given chapter for the original language or the BSB translation (default)
+    /// Returns the lines of text for the specified verse range, or the given chapter for the original language or the BSB translation (default)
+    /// - parameters:
+    ///     - book: The book ID
+    ///     - chapter: The chapter ID
+    ///     - verseRange: The verse range of the text
+    ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
     public func lines(book: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> [String] {
         let verses = verses(book: book, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
         
@@ -80,6 +90,11 @@ public struct BereanBibleManager {
     }
     
     /// Returns the verses for the specified book, chapter and verse range
+    /// - parameters:
+    ///     - book: The book ID
+    ///     - chapter: The chapter ID
+    ///     - verseRange: The verse range of the text
+    ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
     public func verses(book: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> [Verse] {
         // select the verses
         var table = interlinearTable.filter(bookId == book).filter(chapterId == chapter)
@@ -111,7 +126,7 @@ public struct BereanBibleManager {
             
             // when the verse changes, store the parts
             if verseId != lastVerseId {
-                verses.append(Verse(bookId: book, chapter: chapter, verse: lastVerseId, parts: sortParts(isOrig: isOrig, parts: parts)))
+                verses.append(Verse(bookId: book, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
                 parts = []
                 lastVerseId = verseId
             }
@@ -120,12 +135,12 @@ public struct BereanBibleManager {
         }
         
         // store the last parts
-        verses.append(Verse(bookId: book, chapter: chapter, verse: lastVerseId, parts: sortParts(isOrig: isOrig, parts: parts)))
+        verses.append(Verse(bookId: book, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
         return verses
     }
 }
 
-/// Represents a verse and its information
+/// Represents a single verse and its information
 public struct Verse {
     var bookId: Int
     var chapter: Int
@@ -145,7 +160,7 @@ public struct Verse {
     /// - Parameter asOrignal: Indicates that the sort should occur as the original language would sort it
     /// - Returns: The sorted parts.
     mutating func sortParts(asOriginal: Bool) -> [VersePart] {
-        parts = BereanBible.sortParts(isOrig: asOriginal, parts: parts)
+        parts = BereanBible.sortParts(parts, isOrig: asOriginal)
         return parts
     }
 }

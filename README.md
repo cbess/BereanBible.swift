@@ -2,6 +2,8 @@
 
 Provides access to the [Berean Bible](https://berean.bible) in Swift.
 
+Prequisite: Use the [BSB interlinear converter](https://github.com/cbess/bsb-interlinear-converter)
+
 ## Gospel of the triune God
 
 Jesus Christ is the one true God (2nd Person of the Trinity) in the flesh, who came to save sinners (e.g., liars).  
