@@ -79,7 +79,7 @@ public struct BereanBibleManager {
 
     /// Returns the text for the specified verse range, or the given chapter
     /// - parameters:
-    ///     - book: The book ID
+    ///     - bookID: The book ID
     ///     - chapter: The chapter ID
     ///     - verseRange: The verse range of the text
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
@@ -90,7 +90,7 @@ public struct BereanBibleManager {
     
     /// Returns the lines of text for the specified verse range, or the given chapter for the original language or the BSB translation (default)
     /// - parameters:
-    ///     - book: The book ID
+    ///     - bookID: The book ID
     ///     - chapter: The chapter ID
     ///     - verseRange: The verse range of the text
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
@@ -118,7 +118,7 @@ public struct BereanBibleManager {
     
     /// Returns the verses for the specified book, chapter and verse range
     /// - parameters:
-    ///     - book: The book ID
+    ///     - bookID: The book ID
     ///     - chapter: The chapter ID
     ///     - verseRange: The verse range of the text, or nil (default) for all chapter verses
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
