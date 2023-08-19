@@ -83,8 +83,8 @@ public struct BereanBibleManager {
     ///     - chapter: The chapter ID
     ///     - verseRange: The verse range of the text
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
-    public func text(book: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> String {
-        let verses = verses(book: book, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
+    public func text(bookID: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> String {
+        let verses = verses(bookID: bookID, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
         return Self.text(from: verses, isOrig: isOrig)
     }
     
@@ -94,8 +94,8 @@ public struct BereanBibleManager {
     ///     - chapter: The chapter ID
     ///     - verseRange: The verse range of the text
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
-    public func lines(book: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> [String] {
-        let verses = verses(book: book, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
+    public func lines(bookID: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> [String] {
+        let verses = verses(bookID: bookID, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
         return Self.lines(from: verses, isOrig: isOrig)
     }
     
@@ -122,9 +122,9 @@ public struct BereanBibleManager {
     ///     - chapter: The chapter ID
     ///     - verseRange: The verse range of the text, or nil (default) for all chapter verses
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
-    public func verses(book: Int, chapter: Int, verseRange: Range<Int>? = nil, isOrig: Bool = false) -> [Verse] {
+    public func verses(bookID: Int, chapter: Int, verseRange: Range<Int>? = nil, isOrig: Bool = false) -> [Verse] {
         // select the verses
-        var table = interlinearTable.filter(bookId == book).filter(chapterId == chapter)
+        var table = interlinearTable.filter(bookId == bookID).filter(chapterId == chapter)
         if let range = verseRange {
             if range.startIndex == range.endIndex {
                 table = table.filter(verseId == range.startIndex)
@@ -153,7 +153,7 @@ public struct BereanBibleManager {
             
             // when the verse changes, store the parts
             if verseId != lastVerseId {
-                verses.append(Verse(bookID: book, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
+                verses.append(Verse(bookID: bookID, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
                 parts = []
                 lastVerseId = verseId
             }
@@ -162,7 +162,7 @@ public struct BereanBibleManager {
         }
         
         // store the last parts
-        verses.append(Verse(bookID: book, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
+        verses.append(Verse(bookID: bookID, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
         return verses
     }
 }
