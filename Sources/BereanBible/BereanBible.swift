@@ -29,6 +29,49 @@ fileprivate func sortParts(_ parts: [VersePart], isOrig: Bool) -> [VersePart] {
 public struct BereanBibleManager {
     let db: Connection
     
+    /// Returns the text for the given verse parts
+    public static func line(from parts: [VersePart], isOrig: Bool = false) -> String {
+        let lineText = NSMutableString()
+        
+        for (idx, part) in parts.enumerated() {
+            if idx != 0 {
+                lineText.append(" ")
+            }
+            
+            let text = isOrig ? part.origText : part.text
+            lineText.append(text)
+        }
+        
+        return lineText as String
+    }
+    
+    /// Returns the lines from the specified verses
+    public static func lines(from verses: [Verse], isOrig: Bool = false) -> [String] {
+        // collect all text lines from all the verses
+        var textParts: [String] = []
+        for verse in verses {
+            textParts.append(Self.line(from: verse.parts, isOrig: isOrig))
+        }
+        
+        return textParts
+    }
+    
+    /// Returns the text for the given verses
+    public static func text(from verses: [Verse], isOrig: Bool = false) -> String {
+        let lines = Self.lines(from: verses, isOrig: isOrig)
+        let text = NSMutableString()
+        
+        for (idx, line) in lines.enumerated() {
+            if idx != 0 {
+                text.append(" ")
+            }
+            
+            text.append(line)
+        }
+        
+        return text as String
+    }
+    
     public init() {
         let path = Bundle.module.path(forResource: "bsb", ofType: "db")!
         db = try! Connection(path, readonly: true)
@@ -41,14 +84,8 @@ public struct BereanBibleManager {
     ///     - verseRange: The verse range of the text
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
     public func text(book: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> String {
-        let lines = lines(book: book, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
-        
-        let fullText = NSMutableString()
-        for line in lines {
-            fullText.append(line + " ")
-        }
-        
-        return (fullText as String).trimmingCharacters(in: .whitespaces)
+        let verses = verses(book: book, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
+        return Self.text(from: verses, isOrig: isOrig)
     }
     
     /// Returns the lines of text for the specified verse range, or the given chapter for the original language or the BSB translation (default)
@@ -59,17 +96,7 @@ public struct BereanBibleManager {
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
     public func lines(book: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> [String] {
         let verses = verses(book: book, chapter: chapter, verseRange: verseRange, isOrig: isOrig)
-        
-        // collect all text from all the rows/verses
-        var textParts: [String] = []
-        for verse in verses {
-            for part in verse.parts {
-                let text = isOrig ? part.origText : part.text
-                textParts.append(text)
-            }
-        }
-        
-        return textParts
+        return Self.lines(from: verses, isOrig: isOrig)
     }
     
     private func getVersePart(from row: Row) -> VersePart {
@@ -78,7 +105,7 @@ public struct BereanBibleManager {
             origText: try! row.get(origText),
             sort: try! row.get(bsbSort),
             text: try! row.get(bsbText),
-            bookId: try! row.get(bookId),
+            bookID: try! row.get(bookId),
             chapter: try! row.get(chapterId),
             verse: try! row.get(verseId),
             transliteration: try! row.get(translit),
@@ -93,16 +120,16 @@ public struct BereanBibleManager {
     /// - parameters:
     ///     - book: The book ID
     ///     - chapter: The chapter ID
-    ///     - verseRange: The verse range of the text
+    ///     - verseRange: The verse range of the text, or nil (default) for all chapter verses
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
-    public func verses(book: Int, chapter: Int, verseRange: Range<Int>?, isOrig: Bool = false) -> [Verse] {
+    public func verses(book: Int, chapter: Int, verseRange: Range<Int>? = nil, isOrig: Bool = false) -> [Verse] {
         // select the verses
         var table = interlinearTable.filter(bookId == book).filter(chapterId == chapter)
         if let range = verseRange {
             if range.startIndex == range.endIndex {
                 table = table.filter(verseId == range.startIndex)
             } else {
-                table = table.filter(verseId >= range.startIndex).filter(verseId < range.endIndex)
+                table = table.filter(verseId >= range.startIndex).filter(verseId <= range.endIndex)
             }
         }
         
@@ -126,7 +153,7 @@ public struct BereanBibleManager {
             
             // when the verse changes, store the parts
             if verseId != lastVerseId {
-                verses.append(Verse(bookId: book, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
+                verses.append(Verse(bookID: book, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
                 parts = []
                 lastVerseId = verseId
             }
@@ -135,21 +162,21 @@ public struct BereanBibleManager {
         }
         
         // store the last parts
-        verses.append(Verse(bookId: book, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
+        verses.append(Verse(bookID: book, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
         return verses
     }
 }
 
 /// Represents a single verse and its information
 public struct Verse {
-    var bookId: Int
+    var bookID: Int
     var chapter: Int
     var verse: Int
     var parts: [VersePart]
     var langCode: String
     
-    init(bookId: Int, chapter: Int, verse: Int, parts: [VersePart]) {
-        self.bookId = bookId
+    init(bookID: Int, chapter: Int, verse: Int, parts: [VersePart]) {
+        self.bookID = bookID
         self.chapter = chapter
         self.verse = verse
         self.parts = parts
@@ -171,8 +198,10 @@ public struct VersePart {
     var origText: String
     var sort: Double
     var text: String
-    var bookId: Int
+    var bookID: Int
+    /// Chapter number
     var chapter: Int
+    /// Verse number
     var verse: Int
     var transliteration: String
     var parsing: String
