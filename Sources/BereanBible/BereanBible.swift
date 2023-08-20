@@ -85,7 +85,7 @@ public struct BereanBibleManager {
     // MARK: - Initializer
     
     public init() throws {
-        if let path = Bundle.module.path(forResource: dbName, ofType: "db") {
+        if let path = Bundle.module.path(forResource: dbName, ofType: "db") ?? Bundle.main.path(forResource: dbName, ofType: "db") {
             db = try! Connection(path, readonly: true)
         } else {
             throw BereanBibleError.notFound(message: "Unable to find the bible database: \(dbName).db")
