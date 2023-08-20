@@ -2,7 +2,8 @@
 
 Provides access to the [Berean Bible](https://berean.bible) in Swift.
 
-Prequisite: Use the [BSB interlinear converter](https://github.com/cbess/bsb-interlinear-converter)
+Prequisite: Use the [BSB interlinear converter](https://github.com/cbess/bsb-interlinear-converter) to create the local database.
+Must be named: `bsb-interlinear.db`
 
 ## Gospel of the triune God
 
@@ -16,5 +17,8 @@ Christ is the perfect Savior that saves by grace through faith alone.
 - Public domain and high-quality bible translation
 - Developer-friendly API
 - Easy integration via SPM
+- Biblical Hebrew, Aramaic, and Koine Greek for each translated word
+- Lexical information
+- Strong numbers
 
 [Soli Deo gloria](https://perfectGod.com)
