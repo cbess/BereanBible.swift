@@ -10,7 +10,7 @@ fileprivate let origText = Expression<String>("orig_text")
 fileprivate let bsbSort = Expression<Double>("bsb_sort")
 fileprivate let bsbText = Expression<String>("bsb_text")
 fileprivate let langCode = Expression<String>("lang_code")
-fileprivate let bookId = Expression<Int>("book")
+fileprivate let bookId = Expression<Int>("book_id")
 fileprivate let chapterId = Expression<Int>("chapter")
 fileprivate let verseId = Expression<Int>("verse")
 fileprivate let translit = Expression<String>("transliteration")
@@ -85,7 +85,7 @@ public struct BereanBibleManager {
     // MARK: - Initializer
     
     public init() throws {
-        if let path = Bundle.module.path(forResource: dbName, ofType: "db") ?? Bundle.main.path(forResource: dbName, ofType: "db") {
+        if let path = Bundle.module.path(forResource: dbName, ofType: "db") {
             db = try! Connection(path, readonly: true)
         } else {
             throw BereanBibleError.notFound(message: "Unable to find the bible database: \(dbName).db")
