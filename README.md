@@ -17,7 +17,13 @@ Christ is the perfect Savior that saves by grace through faith alone.
 - Easy integration via SPM
 - Biblical Hebrew, Aramaic, and Koine Greek for each translated word
 - Lexical information
-- Strong numbers
+- Strong's numbers
+- Transliteration
+- Morphology
+
+## Interlinear Bible
+
+The Greek source is documented for all renderings, with the following major sources being considered: Nestle, SBL, and Nestle Aland 28th Edition, Textus Receptus, Byzantine, Greek Orthodox, Tischendorf, Westcott and Hort, as well as a variety of manuscripts on which these critical texts are based.
 
 ## Notes
 
