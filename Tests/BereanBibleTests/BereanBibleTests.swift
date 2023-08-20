@@ -3,7 +3,8 @@ import XCTest
 
 let Book = (
     Genesis: 1,
-    John: 43
+    John: 43,
+    ThirdJohn: 64
 )
 
 final class BereanBibleTests: XCTestCase {
@@ -36,7 +37,7 @@ final class BereanBibleTests: XCTestCase {
     }
     
     func testSmallChapter() throws {
-        let verses = manager.verses(bookID: 64, chapter: 1)
+        let verses = manager.verses(bookID: Book.ThirdJohn, chapter: 1)
         
         XCTAssertEqual(verses.count, 14, "Wrong verse count for 3 John")
     }

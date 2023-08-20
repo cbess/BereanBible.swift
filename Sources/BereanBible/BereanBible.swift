@@ -20,15 +20,21 @@ fileprivate let strongsId = Expression<Int>("strongs")
 fileprivate let strongsNumId = Expression<Int>("num")
 fileprivate let strongsText = Expression<Int>("text")
 
+let dbName = "bsb-interlinear"
+
 fileprivate func sortParts(_ parts: [VersePart], isOrig: Bool) -> [VersePart] {
     return parts.sorted { lhs, rhs in
         return isOrig ? lhs.origSort < rhs.origSort : lhs.sort < rhs.sort
     }
 }
 
+public enum BereanBibleError: Error {
+    case notFound(message: String)
+}
+
 public struct BereanBibleManager {
     /// Shared bible manager
-    public static let shared = BereanBibleManager()
+    public static let shared = try! BereanBibleManager()
     let db: Connection
     
     // MARK: - Helpers
@@ -78,9 +84,12 @@ public struct BereanBibleManager {
     
     // MARK: - Initializer
     
-    public init() {
-        let path = Bundle.module.path(forResource: "bsb", ofType: "db")!
-        db = try! Connection(path, readonly: true)
+    public init() throws {
+        if let path = Bundle.module.path(forResource: dbName, ofType: "db") {
+            db = try! Connection(path, readonly: true)
+        } else {
+            throw BereanBibleError.notFound(message: "Unable to find the bible database: \(dbName).db")
+        }
     }
     
     // MARK: - Main Operations

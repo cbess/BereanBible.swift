@@ -3,7 +3,7 @@
 
 import PackageDescription
 
-let dbPath = "bsb.db"
+let dbPath = "bsb-interlinear.db"
 let package = Package(
     name: "BereanBible",
     platforms: [
