@@ -16,7 +16,7 @@ fileprivate let verseId = Expression<Int>("verse")
 fileprivate let translit = Expression<String>("transliteration")
 fileprivate let parsing = Expression<String>("parsing")
 fileprivate let parsingFull = Expression<String>("parsing_full")
-fileprivate let strongsId = Expression<Int>("strongs")
+fileprivate let strongsId = Expression<Int?>("strongs")
 fileprivate let strongsNumId = Expression<Int>("num")
 fileprivate let strongsText = Expression<Int>("text")
 
@@ -180,7 +180,7 @@ public struct BereanBibleManager {
             transliteration: try! row.get(translit),
             parsing: try! row.get(parsing),
             parsingFull: try! row.get(parsingFull),
-            strongs: try! row.get(strongsId),
+            strongs: try! row.get(strongsId) ?? 0,
             langCode: try! row.get(langCode)
         )
     }

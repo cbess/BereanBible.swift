@@ -52,4 +52,17 @@ final class BereanBibleTests: XCTestCase {
         
         XCTAssertEqual(text, "Through Him all things were made, and without Him nothing ... was made that has been made.", "Wrong verse text")
     }
+    
+    func testEdgeCases() throws {
+        // has a verse part with no Strong's number
+        let verses = manager.verses(bookID: Book.Genesis, chapter: 1, verseRange: Range(uncheckedBounds: (11, 11)))
+        
+        XCTAssertEqual(verses.count, 1, "wrong verse count")
+        
+        let parts = verses.first!.parts
+        // find the verse
+        let noStrongsPart = parts.filter({ $0.strongs == 0 }).first
+        
+        XCTAssertEqual(noStrongsPart?.strongs, 0, "has a strong value")
+    }
 }
