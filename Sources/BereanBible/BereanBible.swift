@@ -22,7 +22,7 @@ fileprivate let strongsText = Expression<Int>("text")
 
 let dbName = "bsb-interlinear"
 
-fileprivate func sortParts(_ parts: [VersePart], isOrig: Bool) -> [VersePart] {
+fileprivate func sortedParts(_ parts: [VersePart], isOrig: Bool) -> [VersePart] {
     return parts.sorted { lhs, rhs in
         return isOrig ? lhs.origSort < rhs.origSort : lhs.sort < rhs.sort
     }
@@ -153,7 +153,7 @@ public struct BereanBibleManager {
             
             // when the verse changes, store the parts
             if verseId != lastVerseId {
-                verses.append(Verse(bookID: bookID, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
+                verses.append(Verse(bookID: bookID, chapter: chapter, verse: lastVerseId, parts: sortedParts(parts, isOrig: isOrig)))
                 parts = []
                 lastVerseId = verseId
             }
@@ -162,7 +162,7 @@ public struct BereanBibleManager {
         }
         
         // store the last parts
-        verses.append(Verse(bookID: bookID, chapter: chapter, verse: lastVerseId, parts: sortParts(parts, isOrig: isOrig)))
+        verses.append(Verse(bookID: bookID, chapter: chapter, verse: lastVerseId, parts: sortedParts(parts, isOrig: isOrig)))
         return verses
     }
     
@@ -189,11 +189,11 @@ public struct BereanBibleManager {
 
 /// Represents a single verse and its information
 public struct Verse {
-    var bookID: Int
-    var chapter: Int
-    var verse: Int
-    var parts: [VersePart]
-    var langCode: String
+    public let bookID: Int
+    public let chapter: Int
+    public let verse: Int
+    public let parts: [VersePart]
+    let langCode: String
     
     init(bookID: Int, chapter: Int, verse: Int, parts: [VersePart]) {
         self.bookID = bookID
@@ -202,31 +202,23 @@ public struct Verse {
         self.parts = parts
         self.langCode = parts.first!.langCode
     }
-    
-    /// Sorts the parts, based on language. Sorts in-place.
-    /// - Parameter asOrignal: Indicates that the sort should occur as the original language would sort it
-    /// - Returns: The sorted parts.
-    mutating func sortParts(asOriginal: Bool) -> [VersePart] {
-        parts = BereanBible.sortParts(parts, isOrig: asOriginal)
-        return parts
-    }
 }
 
 /// Represents a part of a single verse
 public struct VersePart {
-    var origSort: Double
-    var origText: String
-    var sort: Double
-    var text: String
-    var bookID: Int
+    public let origSort: Double
+    public let origText: String
+    public let sort: Double
+    public let text: String
+    public let bookID: Int
     /// Chapter number
-    var chapter: Int
+    public let chapter: Int
     /// Verse number
-    var verse: Int
-    var transliteration: String
-    var parsing: String
-    var parsingFull: String
-    var strongs: Int
+    public let verse: Int
+    public let transliteration: String
+    public let parsing: String
+    public let parsingFull: String
+    public let strongs: Int
     /// Original language code H = Hebrew/Aramaic and G = Greek
-    var langCode: String
+    public let langCode: String
 }
