@@ -4,7 +4,7 @@ import SQLite
 // tables
 fileprivate let interlinearTable = Table("interlinear")
 fileprivate let strongsTable = Table("strongs")
-// columns
+// interlinear table columns
 fileprivate let origSort = Expression<Double>("orig_sort")
 fileprivate let origText = Expression<String>("orig_text")
 fileprivate let bsbSort = Expression<Double>("bsb_sort")
@@ -17,8 +17,9 @@ fileprivate let translit = Expression<String>("transliteration")
 fileprivate let parsing = Expression<String>("parsing")
 fileprivate let parsingFull = Expression<String>("parsing_full")
 fileprivate let strongsId = Expression<Int?>("strongs")
+// strongs table colums
 fileprivate let strongsNumId = Expression<Int>("num")
-fileprivate let strongsText = Expression<Int>("text")
+fileprivate let strongsText = Expression<String>("text")
 
 let dbName = "bsb-interlinear"
 
@@ -82,6 +83,11 @@ public struct BereanBibleManager {
         return text as String
     }
     
+    /// Returns the parts from the specified verses
+    public static func parts(from verses: [Verse]) -> [VersePart] {
+        return verses.flatMap({ $0.parts })
+    }
+    
     // MARK: - Initializer
     
     public init() throws {
@@ -124,17 +130,16 @@ public struct BereanBibleManager {
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
     public func verses(bookID: Int, chapter: Int, verseRange: Range<Int>? = nil, isOrig: Bool = false) -> [Verse] {
         // select the verses
-        var table = interlinearTable.filter(bookId == bookID).filter(chapterId == chapter)
+        var query = interlinearTable.filter(bookId == bookID).filter(chapterId == chapter)
         if let range = verseRange {
             if range.startIndex == range.endIndex {
-                table = table.filter(verseId == range.startIndex)
+                query = query.filter(verseId == range.startIndex)
             } else {
-                table = table.filter(verseId >= range.startIndex).filter(verseId <= range.endIndex)
+                query = query.filter(verseId >= range.startIndex).filter(verseId <= range.endIndex)
             }
         }
         
-        let query = try? db.prepare(table)
-        guard let query = query else {
+        guard let results = try? db.prepare(query) else {
             return []
         }
         
@@ -143,7 +148,7 @@ public struct BereanBibleManager {
         
         // get the verses
         var lastVerseId = 0
-        for row in query {
+        for row in results {
             let verseId = try! row.get(verseId)
             
             // wait until the parts for the first verse in the range are aggregated
@@ -164,6 +169,25 @@ public struct BereanBibleManager {
         // store the last parts
         verses.append(Verse(bookID: bookID, chapter: chapter, verse: lastVerseId, parts: sortedParts(parts, isOrig: isOrig)))
         return verses
+    }
+    
+    /// Returns the strongs lexicon information for the specified part, if available
+    public func strongs(from part: VersePart) -> String {
+        guard part.strongs > 0 else {
+            return ""
+        }
+        
+        let query = strongsTable.where(strongsNumId == part.strongs)
+        
+        guard let results = try? db.prepare(query) else {
+            return ""
+        }
+        
+        // should only be one row
+        for row in results {
+            return try! row.get(strongsText)
+        }
+        return ""
     }
     
     // MARK: - Misc
