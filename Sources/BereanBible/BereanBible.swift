@@ -1,25 +1,27 @@
 import Foundation
 import SQLite
 
+typealias SQLExpression = SQLite.Expression
+
 // tables
 fileprivate let interlinearTable = Table("interlinear")
 fileprivate let strongsTable = Table("strongs")
 // interlinear table columns
-fileprivate let origSort = Expression<Double>("orig_sort")
-fileprivate let origText = Expression<String>("orig_text")
-fileprivate let bsbSort = Expression<Double>("bsb_sort")
-fileprivate let bsbText = Expression<String>("bsb_text")
-fileprivate let langCode = Expression<String>("lang_code")
-fileprivate let bookId = Expression<Int>("book_id")
-fileprivate let chapterId = Expression<Int>("chapter")
-fileprivate let verseId = Expression<Int>("verse")
-fileprivate let translit = Expression<String>("transliteration")
-fileprivate let parsing = Expression<String>("parsing")
-fileprivate let parsingFull = Expression<String>("parsing_full")
-fileprivate let strongsId = Expression<Int?>("strongs")
+fileprivate let origSort = SQLExpression<Double>("orig_sort")
+fileprivate let origText = SQLExpression<String>("orig_text")
+fileprivate let bsbSort = SQLExpression<Double>("bsb_sort")
+fileprivate let bsbText = SQLExpression<String>("bsb_text")
+fileprivate let langCode = SQLExpression<String>("lang_code")
+fileprivate let bookId = SQLExpression<Int>("book_id")
+fileprivate let chapterId = SQLExpression<Int>("chapter")
+fileprivate let verseId = SQLExpression<Int>("verse")
+fileprivate let translit = SQLExpression<String>("transliteration")
+fileprivate let parsing = SQLExpression<String>("parsing")
+fileprivate let parsingFull = SQLExpression<String>("parsing_full")
+fileprivate let strongsId = SQLExpression<Int?>("strongs")
 // strongs table colums
-fileprivate let strongsNumId = Expression<Int>("num")
-fileprivate let strongsText = Expression<String>("text")
+fileprivate let strongsNumId = SQLExpression<Int>("num")
+fileprivate let strongsText = SQLExpression<String>("text")
 
 let dbName = "bsb-interlinear"
 
