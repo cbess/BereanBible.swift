@@ -173,8 +173,8 @@ public struct BereanBibleManager {
         return verses
     }
     
-    /// Returns the copryright text
-    public func copryright() -> String {
+    /// Returns the copyright text
+    public func copyright() -> String {
         return "Berean Interlinear Bible, BIB. Public Domain."
     }
     
