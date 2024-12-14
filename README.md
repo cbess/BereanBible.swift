@@ -16,12 +16,15 @@ Provides offline access to the [Berean Bible](https://berean.bible) in Swift.
 
 ## Interlinear Bible
 
-The Greek source is documented for all renderings, with the following major sources being considered: Nestle, SBL, and Nestle Aland 28th Edition, Textus Receptus, Byzantine, Greek Orthodox, Tischendorf, Westcott and Hort, as well as a variety of manuscripts on which these critical texts are based.
+The Greek source is documented for all renderings, with the following major sources being considered: Nestle, SBL, and Nestle Aland 28th Edition, Textus Receptus, Byzantine, Greek Orthodox, Tischendorf, Westcott and Hort, as well as a variety of manuscripts on which these critical texts are based. [1](https://interlinearbible.com)
 
 ## Notes
 
-Use the [BSB interlinear converter](https://github.com/cbess/bsb-interlinear-converter) to create a local database. 
-Because of the DB, this library will add `~70MB` in size to your app bundle. A remote DB option may be added in the future.
+- You can use the [BSB interlinear converter](https://github.com/cbess/bsb-interlinear-converter) to create a sqlite3 database. 
+- Because of the DB, this library will add `~70MB` in size to your app bundle.
+- No punctuation (e.g., commas, quotes, etc) is included in the BSB text.
+- A remote API option may be added in the future.
+- See Berean translation [change log](https://bereanbible.com/changelog.txt) for data change details
 
 ## Gospel of the triune God
 

@@ -16,7 +16,7 @@ final class BereanBibleTests: XCTestCase {
         // english
         var text = manager.text(bookID: Book.Genesis, chapter: 1, verseRange: Range(uncheckedBounds: (1, 1)))
         
-        XCTAssertEqual(text, "In the beginning God - created the heavens and the earth.")
+        XCTAssertEqual(text, "In the beginning God - created the heavens and the earth")
         
         // hebrew
         text = manager.text(bookID: Book.Genesis, chapter: 1, verseRange: Range(uncheckedBounds: (1, 1)), isOrig: true)
@@ -28,9 +28,9 @@ final class BereanBibleTests: XCTestCase {
         // english
         var text = manager.text(bookID: Book.John, chapter: 1, verseRange: Range(uncheckedBounds: (1, 1)))
         
-        XCTAssertEqual(text, "In [the] beginning was the Word, and the Word was with - God, and the Word was God.")
+        XCTAssertEqual(text, "In [the] beginning was the Word and the Word was with - God and the Word was God")
         
-        // hebrew
+        // greek
         text = manager.text(bookID: Book.John, chapter: 1, verseRange: Range(uncheckedBounds: (1, 1)), isOrig: true)
         
         XCTAssertEqual(text, "Ἐν ἀρχῇ ἦν ὁ Λόγος καὶ ὁ Λόγος ἦν πρὸς τὸν Θεόν καὶ Θεὸς ἦν ὁ Λόγος")
@@ -50,7 +50,7 @@ final class BereanBibleTests: XCTestCase {
         let verse3 = verses.last!
         let text = BereanBibleManager.text(from: [verse3])
         
-        XCTAssertEqual(text, "Through Him all things were made, and without Him nothing ... was made that has been made.", "Wrong verse text")
+        XCTAssertEqual(text, "Through Him all things were made and without Him nothing ... was made that has been made", "Wrong verse text")
     }
     
     func testEdgeCases() throws {

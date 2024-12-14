@@ -3,27 +3,27 @@ import SQLite
 
 typealias SQLExpression = SQLite.Expression
 
+fileprivate let DBName = "bsb-interlinear"
+
 // tables
 fileprivate let interlinearTable = Table("interlinear")
-fileprivate let strongsTable = Table("strongs")
+//fileprivate let strongsTable = Table("strongs")
 // interlinear table columns
-fileprivate let origSort = SQLExpression<Double>("orig_sort")
-fileprivate let origText = SQLExpression<String>("orig_text")
-fileprivate let bsbSort = SQLExpression<Double>("bsb_sort")
-fileprivate let bsbText = SQLExpression<String>("bsb_text")
-fileprivate let langCode = SQLExpression<String>("lang_code")
-fileprivate let bookId = SQLExpression<Int>("book_id")
-fileprivate let chapterId = SQLExpression<Int>("chapter")
-fileprivate let verseId = SQLExpression<Int>("verse")
-fileprivate let translit = SQLExpression<String>("transliteration")
-fileprivate let parsing = SQLExpression<String>("parsing")
-fileprivate let parsingFull = SQLExpression<String>("parsing_full")
-fileprivate let strongsId = SQLExpression<Int?>("strongs")
+fileprivate let col_orig_sort = SQLExpression<Double>("orig_sort")
+fileprivate let col_orig_text = SQLExpression<String>("orig_text")
+fileprivate let col_bsb_sort = SQLExpression<Double>("bsb_sort")
+fileprivate let col_bsb_text = SQLExpression<String>("bsb_text")
+fileprivate let col_lang_code = SQLExpression<String>("lang_code")
+fileprivate let col_book_id = SQLExpression<Int>("book_id")
+fileprivate let col_chapter = SQLExpression<Int>("chapter")
+fileprivate let col_verse = SQLExpression<Int>("verse")
+fileprivate let col_transliteration = SQLExpression<String>("transliteration")
+fileprivate let col_parsing = SQLExpression<String>("parsing")
+fileprivate let col_parsing_full = SQLExpression<String>("parsing_full")
+fileprivate let col_strongs = SQLExpression<Int?>("strongs")
 // strongs table colums
-fileprivate let strongsNumId = SQLExpression<Int>("num")
-fileprivate let strongsText = SQLExpression<String>("text")
-
-let dbName = "bsb-interlinear"
+//fileprivate let strongsNumId = SQLExpression<Int>("num")
+//fileprivate let strongsText = SQLExpression<String>("text")
 
 fileprivate func sortedParts(_ parts: [VersePart], isOrig: Bool) -> [VersePart] {
     return parts.sorted { lhs, rhs in
@@ -44,7 +44,7 @@ public struct BereanBibleManager {
     
     /// Returns the text for the given verse parts
     public static func line(from parts: [VersePart], isOrig: Bool = false) -> String {
-        let lineText = NSMutableString()
+        var lineText = ""
         
         for (idx, part) in parts.enumerated() {
             if idx != 0 {
@@ -72,7 +72,7 @@ public struct BereanBibleManager {
     /// Returns the text for the given verses
     public static func text(from verses: [Verse], isOrig: Bool = false) -> String {
         let lines = Self.lines(from: verses, isOrig: isOrig)
-        let text = NSMutableString()
+        var text = ""
         
         for (idx, line) in lines.enumerated() {
             if idx != 0 {
@@ -93,10 +93,10 @@ public struct BereanBibleManager {
     // MARK: - Initializer
     
     public init() throws {
-        if let path = Bundle.module.path(forResource: dbName, ofType: "db") {
+        if let path = Bundle.module.path(forResource: DBName, ofType: "db") {
             db = try! Connection(path, readonly: true)
         } else {
-            throw BereanBibleError.notFound(message: "Unable to find the bible database: \(dbName).db")
+            throw BereanBibleError.notFound(message: "Unable to find the bible database: \(DBName).db")
         }
     }
     
@@ -132,12 +132,12 @@ public struct BereanBibleManager {
     ///     - isOrig: Indicates if the original language or the BSB translation (default) is used
     public func verses(bookID: Int, chapter: Int, verseRange: Range<Int>? = nil, isOrig: Bool = false) -> [Verse] {
         // select the verses
-        var query = interlinearTable.filter(bookId == bookID).filter(chapterId == chapter)
+        var query = interlinearTable.filter(col_book_id == bookID).filter(col_chapter == chapter)
         if let range = verseRange {
             if range.startIndex == range.endIndex {
-                query = query.filter(verseId == range.startIndex)
+                query = query.filter(col_verse == range.startIndex)
             } else {
-                query = query.filter(verseId >= range.startIndex).filter(verseId <= range.endIndex)
+                query = query.filter(col_verse >= range.startIndex).filter(col_verse <= range.endIndex)
             }
         }
         
@@ -151,7 +151,7 @@ public struct BereanBibleManager {
         // get the verses
         var lastVerseId = 0
         for row in results {
-            let verseId = try! row.get(verseId)
+            let verseId = try! row.get(col_verse)
             
             // wait until the parts for the first verse in the range are aggregated
             if lastVerseId == 0 {
@@ -165,7 +165,7 @@ public struct BereanBibleManager {
                 lastVerseId = verseId
             }
             
-            parts.append(getVersePart(from: row))
+            parts.append(versePart(from: row))
         }
         
         // store the last parts
@@ -174,40 +174,41 @@ public struct BereanBibleManager {
     }
     
     /// Returns the strongs lexicon information for the specified part, if available
-    public func strongs(from part: VersePart) -> String {
+    private func strongs(from part: VersePart) -> String {
         guard part.strongs > 0 else {
             return ""
         }
-        
-        let query = strongsTable.where(strongsNumId == part.strongs)
-        
-        guard let results = try? db.prepare(query) else {
-            return ""
-        }
+
+        // TODO: parser must be updated
+//        let query = strongsTable.where(strongsNumId == part.strongs)
+//        
+//        guard let results = try? db.prepare(query) else {
+//            return ""
+//        }
         
         // should only be one row
-        for row in results {
-            return try! row.get(strongsText)
-        }
+//        for row in results {
+//            return try! row.get(strongsText)
+//        }
         return ""
     }
     
     // MARK: - Misc
     
-    private func getVersePart(from row: Row) -> VersePart {
+    private func versePart(from row: Row) -> VersePart {
         return VersePart(
-            origSort: try! row.get(origSort),
-            origText: try! row.get(origText),
-            sort: try! row.get(bsbSort),
-            text: try! row.get(bsbText),
-            bookID: try! row.get(bookId),
-            chapter: try! row.get(chapterId),
-            verse: try! row.get(verseId),
-            transliteration: try! row.get(translit),
-            parsing: try! row.get(parsing),
-            parsingFull: try! row.get(parsingFull),
-            strongs: try! row.get(strongsId) ?? 0,
-            langCode: try! row.get(langCode)
+            origSort: try! row.get(col_orig_sort),
+            origText: try! row.get(col_orig_text),
+            sort: try! row.get(col_bsb_sort),
+            text: try! row.get(col_bsb_text),
+            bookID: try! row.get(col_book_id),
+            chapter: try! row.get(col_chapter),
+            verse: try! row.get(col_verse),
+            transliteration: try! row.get(col_transliteration),
+            parsing: try! row.get(col_parsing),
+            parsingFull: try! row.get(col_parsing_full),
+            strongs: try! row.get(col_strongs) ?? 0,
+            langCode: try! row.get(col_lang_code)
         )
     }
     
