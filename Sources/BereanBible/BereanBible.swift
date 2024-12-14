@@ -173,6 +173,11 @@ public struct BereanBibleManager {
         return verses
     }
     
+    /// Returns the copryright text
+    public func copryright() -> String {
+        return "Berean Interlinear Bible, BIB. Public Domain."
+    }
+    
     /// Returns the strongs lexicon information for the specified part, if available
     private func strongs(from part: VersePart) -> String {
         guard part.strongs > 0 else {
@@ -216,10 +221,15 @@ public struct BereanBibleManager {
 
 /// Represents a single verse and its information
 public struct Verse {
+    /// The identifier for the book: 1 = Genesis, 2 = Exodus, etc.
     public let bookID: Int
+    /// Chapter number
     public let chapter: Int
+    /// Verse number
     public let verse: Int
+    /// The parts to the verse, usually each original language's single word
     public let parts: [VersePart]
+    /// Original language code: H = Hebrew/Aramaic and G = Greek
     let langCode: String
     
     init(bookID: Int, chapter: Int, verse: Int, parts: [VersePart]) {
@@ -233,19 +243,27 @@ public struct Verse {
 
 /// Represents a part of a single verse
 public struct VersePart {
+    /// The original language sort order for this part
     public let origSort: Double
+    /// The original lanuage text
     public let origText: String
+    /// The sort order for the translation
     public let sort: Double
+    /// The translated text
     public let text: String
+    /// The identifier for the book: 1 = Genesis, 2 = Exodus, etc.
     public let bookID: Int
     /// Chapter number
     public let chapter: Int
     /// Verse number
     public let verse: Int
     public let transliteration: String
+    /// The abbreviated parsing string
     public let parsing: String
+    /// The unabbreviated parsing string
     public let parsingFull: String
+    /// The Strongs number
     public let strongs: Int
-    /// Original language code H = Hebrew/Aramaic and G = Greek
+    /// Original language code: H = Hebrew/Aramaic and G = Greek
     public let langCode: String
 }
