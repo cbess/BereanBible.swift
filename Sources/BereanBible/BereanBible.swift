@@ -58,7 +58,7 @@ public struct BereanBibleManager {
         return lineText
     }
     
-    private static func eachLine(from verses: [Verse], handler: (Int, Verse) -> Void) {
+    private static func eachVerse(from verses: [Verse], handler: (Int, Verse) -> Void) {
         for (idx, verse) in verses.enumerated() {
             handler(idx, verse)
         }
@@ -68,7 +68,7 @@ public struct BereanBibleManager {
     public static func lines(from verses: [Verse], isOrig: Bool = false) -> [String] {
         // collect all text lines from all the verses
         var textParts: [String] = []
-        eachLine(from: verses) { (idx, verse) in
+        eachVerse(from: verses) { (idx, verse) in
             textParts.append(Self.line(from: verse.parts, isOrig: isOrig))
         }
         return textParts
@@ -78,7 +78,7 @@ public struct BereanBibleManager {
     public static func text(from verses: [Verse], isOrig: Bool = false) -> String {
         var text = ""
         
-        eachLine(from: verses) { idx, verse in
+        eachVerse(from: verses) { idx, verse in
             let line = Self.line(from: verse.parts, isOrig: isOrig)
             if idx != 0 {
                 text.append(" ")
