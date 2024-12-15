@@ -36,7 +36,7 @@ final class BereanBibleTests: XCTestCase {
         XCTAssertEqual(text, "Ἐν ἀρχῇ ἦν ὁ Λόγος καὶ ὁ Λόγος ἦν πρὸς τὸν Θεόν καὶ Θεὸς ἦν ὁ Λόγος")
     }
     
-    func testSmallChapter() throws {
+    func testSmallChapterVerses() throws {
         let verses = manager.verses(bookID: Book.ThirdJohn, chapter: 1)
         
         XCTAssertEqual(verses.count, 14, "Wrong verse count for 3 John")

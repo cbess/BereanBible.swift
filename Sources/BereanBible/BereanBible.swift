@@ -55,26 +55,31 @@ public struct BereanBibleManager {
             lineText.append(text)
         }
         
-        return lineText as String
+        return lineText
+    }
+    
+    private static func eachLine(from verses: [Verse], handler: (Int, Verse) -> Void) {
+        for (idx, verse) in verses.enumerated() {
+            handler(idx, verse)
+        }
     }
     
     /// Returns the lines from the specified verses
     public static func lines(from verses: [Verse], isOrig: Bool = false) -> [String] {
         // collect all text lines from all the verses
         var textParts: [String] = []
-        for verse in verses {
+        eachLine(from: verses) { (idx, verse) in
             textParts.append(Self.line(from: verse.parts, isOrig: isOrig))
         }
-        
         return textParts
     }
     
     /// Returns the text for the given verses
     public static func text(from verses: [Verse], isOrig: Bool = false) -> String {
-        let lines = Self.lines(from: verses, isOrig: isOrig)
         var text = ""
         
-        for (idx, line) in lines.enumerated() {
+        eachLine(from: verses) { idx, verse in
+            let line = Self.line(from: verse.parts, isOrig: isOrig)
             if idx != 0 {
                 text.append(" ")
             }
@@ -82,7 +87,7 @@ public struct BereanBibleManager {
             text.append(line)
         }
         
-        return text as String
+        return text
     }
     
     /// Returns the parts from the specified verses
@@ -251,11 +256,11 @@ public struct VersePart {
     public let sort: Double
     /// The translated text
     public let text: String
-    /// The identifier for the book: 1 = Genesis, 2 = Exodus, etc.
+    /// The identifier for the book associated with this part: 1 = Genesis, 2 = Exodus, etc.
     public let bookID: Int
-    /// Chapter number
+    /// Chapter number associated with this part
     public let chapter: Int
-    /// Verse number
+    /// Verse number associated with this part
     public let verse: Int
     public let transliteration: String
     /// The abbreviated parsing string
