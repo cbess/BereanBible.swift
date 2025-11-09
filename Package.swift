@@ -18,7 +18,7 @@ let package = Package(
             targets: ["BereanBible"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/stephencelis/SQLite.swift.git", exact: "0.15.3")
+        .package(url: "https://github.com/stephencelis/SQLite.swift.git", exact: "0.15.4")
     ],
     targets: [
         .target(

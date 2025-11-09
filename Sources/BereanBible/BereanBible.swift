@@ -234,7 +234,7 @@ public struct Verse {
     public let verse: Int
     /// The parts to the verse, usually each original language's single word
     public let parts: [VersePart]
-    /// Original language code: H = Hebrew/Aramaic and G = Greek
+    /// Original language code: H = Hebrew/Aramaic and G = Greek; empty if invalid
     let langCode: String
     
     init(bookID: Int, chapter: Int, verse: Int, parts: [VersePart]) {
@@ -242,7 +242,7 @@ public struct Verse {
         self.chapter = chapter
         self.verse = verse
         self.parts = parts
-        self.langCode = parts.first!.langCode
+        self.langCode = parts.first?.langCode ?? ""
     }
 }
 
