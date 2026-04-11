@@ -183,7 +183,7 @@ public struct BereanBibleManager {
         return "Berean Interlinear Bible, BIB. Public Domain."
     }
     
-    /// Returns the strongs lexicon information for the specified part, if available
+    /// TODO: Returns the strongs lexicon information for the specified part, if available
     private func strongs(from part: VersePart) -> String {
         guard part.strongs > 0 else {
             return ""
@@ -225,7 +225,9 @@ public struct BereanBibleManager {
 }
 
 /// Represents a single verse and its information
-public struct Verse {
+@objc(BBVerse)
+@objcMembers
+public final class Verse: NSObject {
     /// The identifier for the book: 1 = Genesis, 2 = Exodus, etc.
     public let bookID: Int
     /// Chapter number
@@ -247,7 +249,9 @@ public struct Verse {
 }
 
 /// Represents a part of a single verse
-public struct VersePart {
+@objc(BBVersePart)
+@objcMembers
+public final class VersePart: NSObject {
     /// The original language sort order for this part
     public let origSort: Double
     /// The original lanuage text
@@ -271,4 +275,100 @@ public struct VersePart {
     public let strongs: Int
     /// Original language code: H = Hebrew/Aramaic and G = Greek
     public let langCode: String
+
+    init(
+        origSort: Double, origText: String, sort: Double, text: String,
+        bookID: Int, chapter: Int, verse: Int, transliteration: String,
+        parsing: String, parsingFull: String, strongs: Int, langCode: String
+    ) {
+        self.origSort = origSort
+        self.origText = origText
+        self.sort = sort
+        self.text = text
+        self.bookID = bookID
+        self.chapter = chapter
+        self.verse = verse
+        self.transliteration = transliteration
+        self.parsing = parsing
+        self.parsingFull = parsingFull
+        self.strongs = strongs
+        self.langCode = langCode
+    }
 }
+
+// MARK: - Objective-C Wrapper
+
+/// The `BereanBibleManager` Objective-C wrapper
+@objc public class BBManager: NSObject {
+    @objc public static let shared = BBManager()
+    
+    private var manager: BereanBibleManager {
+        BereanBibleManager.shared
+    }
+    
+    /// Returns the text for the given chapter.
+    /// - Parameters:
+    ///   - bookID: The book ID.
+    ///   - chapter: The chapter ID.
+    ///   - isOrig: Indicates if the original language or the BSB translation is used.
+    @objc public func text(bookID: Int, chapter: Int, isOrig: Bool) -> String {
+        return manager.text(bookID: bookID, chapter: chapter, verseRange: nil, isOrig: isOrig)
+    }
+    
+    /// Returns the text for the specified verse range.
+    /// - Parameters:
+    ///   - bookID: The book ID.
+    ///   - chapter: The chapter ID.
+    ///   - verseRange: The verse range of the text.
+    ///   - isOrig: Indicates if the original language or the BSB translation is used.
+    @objc public func text(bookID: Int, chapter: Int, verseRange: NSRange, isOrig: Bool) -> String {
+        let range: Range<Int>? = verseRange.location == NSNotFound ? nil : Range(uncheckedBounds: (verseRange.location, verseRange.location + verseRange.length - 1))
+        return manager.text(bookID: bookID, chapter: chapter, verseRange: range, isOrig: isOrig)
+    }
+    
+    /// Returns the lines of text for the given chapter.
+    /// - Parameters:
+    ///   - bookID: The book ID.
+    ///   - chapter: The chapter ID.
+    ///   - isOrig: Indicates if the original language or the BSB translation is used.
+    @objc public func lines(bookID: Int, chapter: Int, isOrig: Bool) -> [String] {
+        return manager.lines(bookID: bookID, chapter: chapter, verseRange: nil, isOrig: isOrig)
+    }
+    
+    /// Returns the lines of text for the specified verse range.
+    /// - Parameters:
+    ///   - bookID: The book ID.
+    ///   - chapter: The chapter ID.
+    ///   - verseRange: The verse range of the text.
+    ///   - isOrig: Indicates if the original language or the BSB translation is used.
+    @objc public func lines(bookID: Int, chapter: Int, verseRange: NSRange, isOrig: Bool) -> [String] {
+        let range: Range<Int>? = verseRange.location == NSNotFound ? nil : Range(uncheckedBounds: (verseRange.location, verseRange.location + verseRange.length - 1))
+        return manager.lines(bookID: bookID, chapter: chapter, verseRange: range, isOrig: isOrig)
+    }
+    
+    /// Returns the verses for the specified book and chapter.
+    /// - Parameters:
+    ///   - bookID: The book ID.
+    ///   - chapter: The chapter ID.
+    ///   - isOrig: Indicates if the original language or the BSB translation is used.
+    @objc public func verses(bookID: Int, chapter: Int, isOrig: Bool) -> [Verse] {
+        return manager.verses(bookID: bookID, chapter: chapter, verseRange: nil, isOrig: isOrig)
+    }
+    
+    /// Returns the verses for the specified book, chapter, and verse range.
+    /// - Parameters:
+    ///   - bookID: The book ID.
+    ///   - chapter: The chapter ID.
+    ///   - verseRange: The verse range of the text.
+    ///   - isOrig: Indicates if the original language or the BSB translation is used.
+    @objc public func verses(bookID: Int, chapter: Int, verseRange: NSRange, isOrig: Bool) -> [Verse] {
+        let range: Range<Int>? = verseRange.location == NSNotFound ? nil : Range(uncheckedBounds: (verseRange.location, verseRange.location + verseRange.length - 1))
+        return manager.verses(bookID: bookID, chapter: chapter, verseRange: range, isOrig: isOrig)
+    }
+    
+    /// Returns the copyright text.
+    @objc public func copyright() -> String {
+        return manager.copyright()
+    }
+}
+

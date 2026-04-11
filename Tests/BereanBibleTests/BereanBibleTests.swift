@@ -65,4 +65,44 @@ final class BereanBibleTests: XCTestCase {
         
         XCTAssertEqual(noStrongsPart?.strongs, 0, "has a strong value")
     }
+    
+    // MARK: - Objective-C Wrapper Tests
+    
+    func testOTVerseBB() throws {
+        let bbManager = BBManager.shared
+        // english
+        var text = bbManager.text(bookID: Book.Genesis, chapter: 1, verseRange: NSMakeRange(1, 1), isOrig: false)
+        XCTAssertEqual(text, "In the beginning God - created the heavens and the earth")
+        
+        // hebrew
+        text = bbManager.text(bookID: Book.Genesis, chapter: 1, verseRange: NSMakeRange(1, 1), isOrig: true)
+        XCTAssertEqual(text, "בְּרֵאשִׁ֖ית בָּרָ֣א אֱלֹהִ֑ים אֵ֥ת הַשָּׁמַ֖יִם וְאֵ֥ת הָאָֽרֶץ׃")
+    }
+    
+    func testNTVerseBB() throws {
+        let bbManager = BBManager.shared
+        // english
+        var text = bbManager.text(bookID: Book.John, chapter: 1, verseRange: NSMakeRange(1, 1), isOrig: false)
+        XCTAssertEqual(text, "In [the] beginning was the Word and the Word was with - God and the Word was God")
+        
+        // greek
+        text = bbManager.text(bookID: Book.John, chapter: 1, verseRange: NSMakeRange(1, 1), isOrig: true)
+        XCTAssertEqual(text, "Ἐν ἀρχῇ ἦν ὁ Λόγος καὶ ὁ Λόγος ἦν πρὸς τὸν Θεόν καὶ Θεὸς ἦν ὁ Λόγος")
+    }
+    
+    func testSmallChapterVersesBB() throws {
+        let bbManager = BBManager.shared
+        let verses = bbManager.verses(bookID: Book.ThirdJohn, chapter: 1, isOrig: false)
+        XCTAssertEqual(verses.count, 14, "Wrong verse count for 3 John")
+    }
+    
+    func testNTVersePartsBB() throws {
+        let bbManager = BBManager.shared
+        let verses = bbManager.verses(bookID: Book.John, chapter: 1, verseRange: NSMakeRange(1, 3), isOrig: false)
+        XCTAssertEqual(verses.count, 3, "Wrong verse count for John 1:1-3")
+        
+        let verse3 = verses.last!
+        let partsWords = verse3.parts.map { $0.text }.joined(separator: " ")
+        XCTAssertEqual(partsWords, "Through Him all things were made and without Him nothing ... was made that has been made", "Wrong verse text")
+    }
 }
