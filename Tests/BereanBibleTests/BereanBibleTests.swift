@@ -8,9 +8,7 @@ let Book = (
 )
 
 final class BereanBibleTests: XCTestCase {
-    var manager: BereanBibleManager {
-        return BereanBibleManager.shared
-    }
+    let manager = BereanBibleManager.shared
     
     func testOTVerse() throws {
         // english
@@ -67,9 +65,9 @@ final class BereanBibleTests: XCTestCase {
     }
     
     // MARK: - Objective-C Wrapper Tests
+    let bbManager = BBManager.shared
     
     func testOTVerseBB() throws {
-        let bbManager = BBManager.shared
         // english
         var text = bbManager.text(bookID: Book.Genesis, chapter: 1, verseRange: NSMakeRange(1, 1), isOrig: false)
         XCTAssertEqual(text, "In the beginning God - created the heavens and the earth")
@@ -80,7 +78,6 @@ final class BereanBibleTests: XCTestCase {
     }
     
     func testNTVerseBB() throws {
-        let bbManager = BBManager.shared
         // english
         var text = bbManager.text(bookID: Book.John, chapter: 1, verseRange: NSMakeRange(1, 1), isOrig: false)
         XCTAssertEqual(text, "In [the] beginning was the Word and the Word was with - God and the Word was God")
@@ -91,18 +88,16 @@ final class BereanBibleTests: XCTestCase {
     }
     
     func testSmallChapterVersesBB() throws {
-        let bbManager = BBManager.shared
         let verses = bbManager.verses(bookID: Book.ThirdJohn, chapter: 1, isOrig: false)
         XCTAssertEqual(verses.count, 14, "Wrong verse count for 3 John")
     }
     
     func testNTVersePartsBB() throws {
-        let bbManager = BBManager.shared
         let verses = bbManager.verses(bookID: Book.John, chapter: 1, verseRange: NSMakeRange(1, 3), isOrig: false)
         XCTAssertEqual(verses.count, 3, "Wrong verse count for John 1:1-3")
         
         let verse3 = verses.last!
-        let partsWords = verse3.parts.map { $0.text }.joined(separator: " ")
+        let partsWords = BBManager.text(from: [verse3], isOrig: false)
         XCTAssertEqual(partsWords, "Through Him all things were made and without Him nothing ... was made that has been made", "Wrong verse text")
     }
 }

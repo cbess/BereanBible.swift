@@ -305,6 +305,11 @@ public final class VersePart: NSObject {
     private var manager: BereanBibleManager {
         BereanBibleManager.shared
     }
+
+    /// Returns the text for the given verses
+    @objc public static func text(from verses: [Verse], isOrig: Bool) -> String {
+        return BereanBibleManager.text(from: verses, isOrig: isOrig)
+    }
     
     /// Returns the text for the given chapter.
     /// - Parameters:
