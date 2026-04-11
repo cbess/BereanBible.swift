@@ -1,6 +1,6 @@
 # BereanBible
 
-Provides offline access to the [Berean Bible](https://berean.bible) in Swift.
+Provides offline access to the interlinear [Berean Bible](https://berean.bible) in Swift.
 
 ## Features
 
