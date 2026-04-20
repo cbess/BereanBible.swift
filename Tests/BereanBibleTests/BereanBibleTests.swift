@@ -64,6 +64,27 @@ final class BereanBibleTests: XCTestCase {
         XCTAssertEqual(noStrongsPart?.strongs, 0, "has a strong value")
     }
     
+    func testNormalizedParsingFull() throws {
+        let otVerses = manager.verses(bookID: Book.Genesis, chapter: 1, verseRange: Range(uncheckedBounds: (1, 1)))
+        let ot2Verses = manager.verses(bookID: Book.Genesis, chapter: 1, verseRange: Range(uncheckedBounds: (2, 2)))
+        let ntVerses = manager.verses(bookID: Book.John, chapter: 1, verseRange: Range(uncheckedBounds: (1, 1)))
+        
+        // ot
+        // genesis 1:1
+        let otV1 = otVerses.first
+        XCTAssertEqual(otV1?.parts[0].normalizedParsingFull(), "preposition b noun feminine singular")
+        
+        // genesis 1:2
+        let ot2V1 = ot2Verses.first
+        XCTAssertEqual(ot2V1?.parts[0].normalizedParsingFull(), "conjunctive waw article noun feminine singular")
+        
+        // nt
+        // john 1:1
+        let ntV1 = ntVerses.first
+        XCTAssertEqual(ntV1?.parts[1].normalizedParsingFull(), "noun dative feminine singular")
+        XCTAssertEqual(ntV1?.parts[2].normalizedParsingFull(), "verb imperfect indicative active 3rd person singular")
+    }
+    
     // MARK: - Objective-C Wrapper Tests
     let bbManager = BBManager.shared
     

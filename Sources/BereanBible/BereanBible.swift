@@ -294,6 +294,20 @@ public final class VersePart: NSObject {
         self.strongs = strongs
         self.langCode = langCode
     }
+    
+    /// Returns a normalized full parsing string to use for consistent parsing analysis.
+    /// The return value only contains lower cased alpha-numeric characters with single spaces.
+    public func normalizedParsingFull() -> String {
+        let lower = parsingFull.lowercased()
+        // replace all non-alphanumeric characters with a space
+        let normalized = lower.unicodeScalars.map { CharacterSet.alphanumerics.contains($0) ? Character($0) : " " }
+        let result = String(normalized)
+        // collapse multiple spaces into one and trim
+        return result
+            .components(separatedBy: .whitespaces)
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+    }
 }
 
 // MARK: - Objective-C Wrapper
